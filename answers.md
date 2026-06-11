@@ -99,13 +99,13 @@ ls -la ~
 
 **What makes a file hidden in Linux?**
 
-A file is hidden simply by naming it with a leading dot — for example `.hidden_file`. There is nothing special about the file type, the filesystem entry, or the inode. It is purely a naming convention that `ls` respects by default. Any file or directory can be "hidden" this way and "unhidden" by renaming it. It is a display convention, not a security feature.
+A file is hidden simply by naming it with a leading dot for example `.hidden_file`. There is nothing special about the file type, the filesystem entry, or the inode. It is purely a naming convention that `ls` respects by default. Any file or directory can be "hidden" this way and "unhidden" by renaming it. It is a display convention, not a security feature.
 
 **Two real hidden files in a home directory:**
 
-1. **`.bashrc`** — A shell script sourced every time an interactive non-login Bash session starts. It contains user-specific aliases (e.g. `alias ll='ls -la'`), environment variables, and PATH additions. Attackers who gain shell access to a server often modify `.bashrc` to establish persistence adding a reverse shell or a malicious alias that runs every time the user opens a terminal.
+1. **`.bashrc`** A shell script sourced every time an interactive non-login Bash session starts. It contains user-specific aliases (e.g. `alias ll='ls -la'`), environment variables, and PATH additions. Attackers who gain shell access to a server often modify `.bashrc` to establish persistence adding a reverse shell or a malicious alias that runs every time the user opens a terminal.
 
-2. **`.ssh/`** A directory containing SSH keys and the `authorized_keys` file. `authorized_keys` lists public keys that are permitted to authenticate as this user without a password. An attacker who gains write access to this file can add their own public key and log in at will — which is why its permissions must be exactly `600` and the `.ssh/` directory must be `700`.
+2. **`.ssh/`** A directory containing SSH keys and the `authorized_keys` file. `authorized_keys` lists public keys that are permitted to authenticate as this user without a password. An attacker who gains write access to this file can add their own public key and log in at will which is why its permissions must be exactly `600` and the `.ssh/` directory must be `700`.
 
 ---
 
@@ -211,7 +211,7 @@ Full octal representation: `644`. The owner can read and modify the file. Everyo
 
 **What does the `-h` flag add?**
 
-`-h` (human-readable) formats file sizes in units that are easy to read bytes (B), kilobytes (K), megabytes (M), gigabytes (G) — rather than always showing raw bytes. For a 2,147,483,648-byte file, `-h` shows `2.0G`. Without it you get the number `2147483648` which is harder to parse at a glance. In a directory with hundreds of log files of various sizes, `-h` makes capacity issues obvious immediately.
+`-h` (human-readable) formats file sizes in units that are easy to read bytes (B), kilobytes (K), megabytes (M), gigabytes (G) rather than always showing raw bytes. For a 2,147,483,648-byte file, `-h` shows `2.0G`. Without it you get the number `2147483648` which is harder to parse at a glance. In a directory with hundreds of log files of various sizes, `-h` makes capacity issues obvious immediately.
 
 ---
 
@@ -615,7 +615,7 @@ The letter `l` at the start of the permission string (`lrwxrwxrwx`). The listing
 
 **What happened when you read the broken link — what is this called?**
 
-The read failed with "No such file or directory" even though `app_config_link` visibly exists in the directory listing. This is called a **dangling symlink** (or broken symlink). The symlink file itself still exists and points to the path `configs/app.conf`, but that target path no longer resolves to anything — the target was deleted. The kernel follows the symlink to the target path and finds nothing there, so it reports the error as if the symlink itself doesn't exist.
+The read failed with "No such file or directory" even though `app_config_link` visibly exists in the directory listing. This is called a **dangling symlink** (or broken symlink). The symlink file itself still exists and points to the path `configs/app.conf`, but that target path no longer resolves to anything the target was deleted. The kernel follows the symlink to the target path and finds nothing there, so it reports the error as if the symlink itself doesn't exist.
 
 **Why does a dangling symlink in a deployment pipeline cause hard-to-debug failures?**
 
@@ -627,12 +627,12 @@ A deployment script might check `if [ -f app_config_link ]`  but `[ -f ]` follow
 
 | Property | Hard Link | Soft Link |
 |----------|-----------|-----------|
-| Shares inode with original? | **Yes** — same inode number | **No** — symlink has its own inode; stores path to target |
-| Works across different filesystems? | **No** — inode numbers are unique per filesystem | **Yes** — stores a path string, which can cross filesystem boundaries |
-| Survives deletion of original? | **Yes** — data persists until link count reaches 0 | **No** — becomes a dangling symlink; target data is gone |
-| Can link to a directory? | **No** (root only, not allowed on most systems to prevent loops) | **Yes** — symlinks to directories are common |
-| Shows as `l` in `ls -la`? | **No** — appears identical to a regular file | **Yes** — file type character is `l` |
-| Detectable by matching inodes in `ls -li`? | **Yes** — duplicate inode numbers reveal hard links | **No** — symlink has its own unique inode |
+| Shares inode with original? | **Yes** same inode number | **No** symlink has its own inode; stores path to target |
+| Works across different filesystems? | **No** inode numbers are unique per filesystem | **Yes** stores a path string, which can cross filesystem boundaries |
+| Survives deletion of original? | **Yes** data persists until link count reaches 0 | **No** becomes a dangling symlink; target data is gone |
+| Can link to a directory? | **No** (root only, not allowed on most systems to prevent loops) | **Yes** symlinks to directories are common |
+| Shows as `l` in `ls -la`? | **No** appears identical to a regular file | **Yes** file type character is `l` |
+| Detectable by matching inodes in `ls -li`? | **Yes** duplicate inode numbers reveal hard links | **No** symlink has its own unique inode |
 
 **Real-server use case — Hard Link (DevSecOps context):**
 
@@ -640,7 +640,7 @@ A compliance team requires that audit logs be stored in two locations: `/var/log
 
 **Real-server use case — Soft Link (DevSecOps context):**
 
-An Nginx web server has its configuration at `/etc/nginx/sites-available/cyphercore.conf`. To enable the site, the convention is to create a symlink: `ln -s /etc/nginx/sites-available/cyphercore.conf /etc/nginx/sites-enabled/cyphercore.conf`. This is the standard Nginx pattern — the master config is in `sites-available`, and `sites-enabled` contains only symlinks to active configs. Disabling a site is `rm /etc/nginx/sites-enabled/cyphercore.conf` (the master config is untouched). This pattern is used by Apache, Nginx, systemd unit files, and many other tools because symlinks make enable/disable operations safe and reversible.
+An Nginx web server has its configuration at `/etc/nginx/sites-available/cyphercore.conf`. To enable the site, the convention is to create a symlink: `ln -s /etc/nginx/sites-available/cyphercore.conf /etc/nginx/sites-enabled/cyphercore.conf`. This is the standard Nginx pattern the master config is in `sites-available`, and `sites-enabled` contains only symlinks to active configs. Disabling a site is `rm /etc/nginx/sites-enabled/cyphercore.conf` (the master config is untouched). This pattern is used by Apache, Nginx, systemd unit files, and many other tools because symlinks make enable/disable operations safe and reversible.
 
 ---
 
@@ -818,13 +818,13 @@ tree ~/projects/cyphercore
 
 **How does everything built today connect to real DevSecOps work?**
 
-The directory structure mirrors what a real deployment pipeline expects CI/CD tools fail immediately if a path doesn't exist, which is why the structure is created before any code runs. The log files are exactly what a SIEM ingests: structured timestamped lines with severity levels that trigger alerts on ERROR and CRITICAL entries. Archiving logs with datestamped filenames is how log rotation works in practice the live log file is replaced, the archive is kept for compliance. The inode experiments explain why forensic tools find files that `ls` doesn't show, and why hard-linking is used in secure log architectures. Stream separation is how CI/CD pipelines distinguish a build's successful output from its errors — a failed deployment that mixes stderr with stdout produces a log that looks successful until someone reads it line by line.
+The directory structure mirrors what a real deployment pipeline expects CI/CD tools fail immediately if a path doesn't exist, which is why the structure is created before any code runs. The log files are exactly what a SIEM ingests: structured timestamped lines with severity levels that trigger alerts on ERROR and CRITICAL entries. Archiving logs with datestamped filenames is how log rotation works in practice the live log file is replaced, the archive is kept for compliance. The inode experiments explain why forensic tools find files that `ls` doesn't show, and why hard-linking is used in secure log architectures. Stream separation is how CI/CD pipelines distinguish a build's successful output from its errors a failed deployment that mixes stderr with stdout produces a log that looks successful until someone reads it line by line.
 
 **Two commands that changed how I think about Linux:**
 
 1. **`ls -li`** — Before this lab, a file was just a name. Seeing that `db.conf` and `db_hardlink.conf` share the same inode number makes the abstraction concrete: a filename is just a pointer, and the actual data exists independently of what it's called. This reframes everything deletion, copying, permissions because now I understand what the kernel is actually tracking. In incident response, inode-level thinking is the difference between believing a file is gone and knowing whether it can be recovered.
 
-2. **`2>&1`** — I had seen this in scripts and copy-pasted it without understanding it. Learning that stdout and stderr are separate numbered file descriptors, and that `2>&1` is a runtime redirection of one descriptor to another's current target, makes every deployment log I have ever read make more sense. Half the "disappeared" errors in CI/CD pipelines I have seen are stderr not being captured. Now I will always ask: where is stderr going?
+2. **`2>&1`** I had seen this in scripts and copy-pasted it without understanding it. Learning that stdout and stderr are separate numbered file descriptors, and that `2>&1` is a runtime redirection of one descriptor to another's current target, makes every deployment log I have ever read make more sense. Half the "disappeared" errors in CI/CD pipelines I have seen are stderr not being captured. Now I will always ask: where is stderr going?
 
 ---
 
