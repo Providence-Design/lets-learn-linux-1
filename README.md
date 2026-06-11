@@ -21,7 +21,7 @@ A full simulated DevSecOps environment from scratch, including:
 - A production-style directory structure for a client pipeline (`configs/`, `logs/`, `reports/`, `archive/`)
 - Simulated application logs written with `echo` and heredoc notation
 - Archived and date-stamped log files using `cp` and `mv`
-- Hard links and symbolic links — with experiments showing what happens at the inode level when originals are deleted
+- Hard links and symbolic links with experiments showing what happens at the inode level when originals are deleted
 - Separated stdout and stderr streams into distinct files
 - A weekly security report written in a single heredoc operation
 
@@ -68,7 +68,7 @@ lets-learn-linux-1/
 
 **Inodes changed everything.** Before this lab, a file was just a name. After running `ls -li` and watching `db.conf` and `db_hardlink.conf` share the same inode number, the abstraction became real a filename is just a pointer, and data exists independently of what it's called.
 
-**`2>&1` finally made sense.** I had copy-pasted this in scripts without understanding it. Learning that stdout and stderr are numbered file descriptors, and that `2>&1` redirects one to the other's current destination, explains every "disappeared error" I've seen in CI/CD pipelines.
+**`2>&1` finally made sense.** I had copy-pasted this in scripts without understanding it. Learning that stdout and stderr are numbered file descriptors, and that `2>&1` redirects one to the other's current destination, explains every "disappeared error" I have seen in CI/CD pipelines.
 
 **`>>` vs `>` is not a typo it's a data loss event.** In a production log rotation script, confusing these two operators silently destroys the log content with exit code 0 and no error message.
 
@@ -94,7 +94,7 @@ touch ~/projects/cyphercore/configs/app.conf \
       ~/projects/cyphercore/reports/weekly_report.txt
 ```
 
-From there, follow `answers.md` section by section — each command is documented with its output and explanation.
+From there, follow `answers.md` section by section each command is documented with its output and explanation.
 
 ---
 
@@ -103,4 +103,4 @@ From there, follow `answers.md` section by section — each command is documente
 This assignment is part of the DevSecOps training organised by **@ParoCyber** and facilitated by **Samuel Nartey**.
 
 > *"You don't need to memorise every command. You need to understand why each one exists because on a live server at 2 AM, there's no Google."*
-> — Samuel Nartey, Lead Facilitator
+> Samuel Nartey, Lead Facilitator
