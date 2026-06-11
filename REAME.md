@@ -10,7 +10,7 @@
 
 This repository is my documented submission for **Let's Learn Linux — Episode 1**, a field assignment from the ParoCyber DevSecOps Bootcamp facilitated by Samuel Nartey.
 
-The assignment follows a day in the life of Providence Mensah, a Junior DevSecOps Trainee at CypherCore Systems. Rather than being handed commands to copy, I had to figure out the right tool for each task, execute it, and — most importantly — explain *why* it works.
+The assignment follows a day in the life of Providence Mensah, a Junior DevSecOps Trainee at CypherCore Systems. Rather than being handed commands to copy, I had to figure out the right tool for each task, execute it, and most importantly explain *why* it works.
 
 ---
 
@@ -55,22 +55,22 @@ lets-learn-linux-1/
 
 | Section | Topic | Marks |
 |---------|-------|-------|
-| Section 1 | Orient Yourself — `pwd`, `whoami`, `uname -a`, FHS, hidden files | 10 |
-| Section 2 | Build the Environment — `mkdir -p`, brace expansion, `touch`, `tree` | 15 |
-| Section 3 | Write and Read Files — `echo`, `>>`, heredoc, `cat`, `tac`, `less`, `more` | 20 |
-| Section 4 | Move and Clean Up — `cp`, `mv`, `rmdir`, `rm -r` | 10 |
-| Section 5 | Links and Inodes — hard links, symlinks, inode numbers, dangling links | 20 |
-| Section 6 | Data Streams and Redirection — stdin/stdout/stderr, `2>`, `2>&1` | 15 |
+| Section 1 | Orient Yourself  `pwd`, `whoami`, `uname -a`, FHS, hidden files | 10 |
+| Section 2 | Build the Environment  `mkdir -p`, brace expansion, `touch`, `tree` | 15 |
+| Section 3 | Write and Read Files  `echo`, `>>`, heredoc, `cat`, `tac`, `less`, `more` | 20 |
+| Section 4 | Move and Clean Up  `cp`, `mv`, `rmdir`, `rm -r` | 10 |
+| Section 5 | Links and Inodes  hard links, symlinks, inode numbers, dangling links | 20 |
+| Section 6 | Data Streams and Redirection stdin/stdout/stderr, `2>`, `2>&1` | 15 |
 
 ---
 
 ## Key Things I Learned
 
-**Inodes changed everything.** Before this lab, a file was just a name. After running `ls -li` and watching `db.conf` and `db_hardlink.conf` share the same inode number, the abstraction became real — a filename is just a pointer, and data exists independently of what it's called.
+**Inodes changed everything.** Before this lab, a file was just a name. After running `ls -li` and watching `db.conf` and `db_hardlink.conf` share the same inode number, the abstraction became real a filename is just a pointer, and data exists independently of what it's called.
 
 **`2>&1` finally made sense.** I had copy-pasted this in scripts without understanding it. Learning that stdout and stderr are numbered file descriptors, and that `2>&1` redirects one to the other's current destination, explains every "disappeared error" I've seen in CI/CD pipelines.
 
-**`>>` vs `>` is not a typo — it's a data loss event.** In a production log rotation script, confusing these two operators silently destroys the log content with exit code 0 and no error message.
+**`>>` vs `>` is not a typo it's a data loss event.** In a production log rotation script, confusing these two operators silently destroys the log content with exit code 0 and no error message.
 
 ---
 
@@ -80,7 +80,7 @@ All commands were run on Ubuntu 24.04 LTS. To reproduce the environment:
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/lets-learn-linux-1.git
+git clone https://github.com/Providence-Design/lets-learn-linux-1
 cd lets-learn-linux-1
 
 # Rebuild the directory structure
@@ -102,5 +102,5 @@ From there, follow `answers.md` section by section — each command is documente
 
 This assignment is part of the DevSecOps training organised by **@ParoCyber** and facilitated by **Samuel Nartey**.
 
-> *"You don't need to memorise every command. You need to understand why each one exists — because on a live server at 2 AM, there's no Google."*
+> *"You don't need to memorise every command. You need to understand why each one exists because on a live server at 2 AM, there's no Google."*
 > — Samuel Nartey, Lead Facilitator
