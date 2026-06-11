@@ -35,11 +35,11 @@ Linux cyphercore-dev 6.1.0-21-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.90-1 (2024
 
 - **`whoami`** prints the effective username of the current session. This tells you whether you are a regular user, a service account (e.g. `www-data`, `postgres`), or `root`. The answer changes what you can and cannot do.
 
-- **`uname -a`** — prints all kernel and system information: hostname, kernel version, build date, CPU architecture. The `-a` flag means "all".
+- **`uname -a`** prints all kernel and system information: hostname, kernel version, build date, CPU architecture. The `-a` flag means "all".
 
 **Why a DevSecOps engineer runs these three first when SSHing into an unknown server:**
 
-The moment you connect to an unfamiliar server you need a threat picture before you touch anything. `pwd` and `whoami` together tell you your footprint — are you root, are you in a sensitive directory? `uname -a` gives you the exact kernel version, which you then cross-reference against the CVE database. A server running Linux kernel `5.15.0-78` might be vulnerable to a local privilege escalation like CVE-2023-32629 (GameOver(lay)) that affects Ubuntu kernels in that range. If you don't run `uname -a` first, you could spend hours hardening application configs on a box that an attacker can root in seconds via a known kernel exploit. These three commands cost five seconds and tell you whether the server is fundamentally safe to work on.
+The moment you connect to an unfamiliar server you need a threat picture before you touch anything. `pwd` and `whoami` together tell you your footprint are you root, are you in a sensitive directory? `uname -a` gives you the exact kernel version, which you then cross-reference against the CVE database. A server running Linux kernel `5.15.0-78` might be vulnerable to a local privilege escalation like CVE-2023-32629 (GameOver(lay)) that affects Ubuntu kernels in that range. If you don't run `uname -a` first, you could spend hours hardening application configs on a box that an attacker can root in seconds via a known kernel exploit. These three commands cost five seconds and tell you whether the server is fundamentally safe to work on.
 
 ---
 
@@ -103,7 +103,7 @@ A file is hidden simply by naming it with a leading dot — for example `.hidden
 
 **Two real hidden files in a home directory:**
 
-1. **`.bashrc`** — A shell script sourced every time an interactive non-login Bash session starts. It contains user-specific aliases (e.g. `alias ll='ls -la'`), environment variables, and PATH additions. Attackers who gain shell access to a server often modify `.bashrc` to establish persistence — adding a reverse shell or a malicious alias that runs every time the user opens a terminal.
+1. **`.bashrc`** — A shell script sourced every time an interactive non-login Bash session starts. It contains user-specific aliases (e.g. `alias ll='ls -la'`), environment variables, and PATH additions. Attackers who gain shell access to a server often modify `.bashrc` to establish persistence adding a reverse shell or a malicious alias that runs every time the user opens a terminal.
 
 2. **`.ssh/`** A directory containing SSH keys and the `authorized_keys` file. `authorized_keys` lists public keys that are permitted to authenticate as this user without a password. An attacker who gains write access to this file can add their own public key and log in at will — which is why its permissions must be exactly `600` and the `.ssh/` directory must be `700`.
 
@@ -173,7 +173,7 @@ Nothing destructive. The file's contents are completely unchanged. Only the time
 
 **Why does this behaviour matter in automation scripts?**
 
-Many automation tools Make, Ansible, deployment pipelines — use timestamps to decide whether a file needs to be processed. A script might check: "is this config file newer than the last deployment?" If you use `touch` to signal that a file has been reviewed or updated without changing its contents, it triggers the downstream process. More critically, if scripts check for the existence of placeholder files before proceeding (`if [ -f logs/access/access.log ]; then ...`), a missing placeholder causes a silent failure. Creating them at project setup prevents this entire class of bug.
+Many automation tools Make, Ansible, deployment pipelines use timestamps to decide whether a file needs to be processed. A script might check: "is this config file newer than the last deployment?" If you use `touch` to signal that a file has been reviewed or updated without changing its contents, it triggers the downstream process. More critically, if scripts check for the existence of placeholder files before proceeding (`if [ -f logs/access/access.log ]; then ...`), a missing placeholder causes a silent failure. Creating them at project setup prevents this entire class of bug.
 
 ---
 
@@ -207,11 +207,11 @@ Both files are 0 bytes. They were created with `touch` which does not write any 
 └───────────── File type: - means regular file (d=directory, l=symlink)
 ```
 
-Full octal representation: `644`. The owner can read and modify the file. Everyone else can only read it. No one has execute permission — correct for a config file, which is data, not a program.
+Full octal representation: `644`. The owner can read and modify the file. Everyone else can only read it. No one has execute permission correct for a config file, which is data, not a program.
 
 **What does the `-h` flag add?**
 
-`-h` (human-readable) formats file sizes in units that are easy to read — bytes (B), kilobytes (K), megabytes (M), gigabytes (G) — rather than always showing raw bytes. For a 2,147,483,648-byte file, `-h` shows `2.0G`. Without it you get the number `2147483648` which is harder to parse at a glance. In a directory with hundreds of log files of various sizes, `-h` makes capacity issues obvious immediately.
+`-h` (human-readable) formats file sizes in units that are easy to read bytes (B), kilobytes (K), megabytes (M), gigabytes (G) — rather than always showing raw bytes. For a 2,147,483,648-byte file, `-h` shows `2.0G`. Without it you get the number `2147483648` which is harder to parse at a glance. In a directory with hundreds of log files of various sizes, `-h` makes capacity issues obvious immediately.
 
 ---
 
@@ -244,11 +244,11 @@ tree ~/projects/cyphercore
 
 **How is `tree` different from `ls -R`?**
 
-`ls -R` recursively lists directories but outputs them as a flat sequence of blocks — each directory header followed by its contents. It is hard to visualise the nesting relationship between directories. `tree` draws the hierarchy visually using box-drawing characters, showing parent-child relationships at a glance. At five levels deep, `ls -R` becomes nearly unreadable; `tree` remains clear.
+`ls -R` recursively lists directories but outputs them as a flat sequence of blocks each directory header followed by its contents. It is hard to visualise the nesting relationship between directories. `tree` draws the hierarchy visually using box-drawing characters, showing parent-child relationships at a glance. At five levels deep, `ls -R` becomes nearly unreadable; `tree` remains clear.
 
 **When would a DevSecOps engineer run `tree` on a live server?**
 
-- **Deployment validation**: Confirming a deployment script created the exact directory structure a service expects — missing a subdirectory can cause an application to crash on first write.
+- **Deployment validation**: Confirming a deployment script created the exact directory structure a service expects missing a subdirectory can cause an application to crash on first write.
 - **Security audit**: Checking for unexpected directories or files in a web root or home directory. A `tree /var/www/html` that reveals a `shell.php` or an unexpected `uploads/backdoor/` is an immediate red flag.
 - **Incident response**: When investigating a compromised server, `tree /tmp` and `tree /dev/shm` quickly reveal staged attacker tools and scripts without having to navigate directory by directory.
 
@@ -273,7 +273,7 @@ cat logs/access/access.log
 
 | Operator | Behaviour |
 |----------|-----------|
-| `>` | Redirect stdout to a file. **Truncates** the file first — all existing content is destroyed before writing. If the file doesn't exist, it is created. |
+| `>` | Redirect stdout to a file. **Truncates** the file first all existing content is destroyed before writing. If the file doesn't exist, it is created. |
 | `>>` | Redirect stdout and **append** to the file. Existing content is preserved. The new content is added after the last line. If the file doesn't exist, it is created. |
 
 **Proof — what happens with `>`:**
@@ -299,7 +299,7 @@ tac logs/access/access.log
 
 **Difference:**
 
-`cat` (concatenate) reads the file from the first byte to the last and prints it top to bottom — the oldest log entry at the top, the most recent at the bottom. `tac` is `cat` spelled backwards and does the opposite: it reads the file and outputs lines in reverse order, so the most recent log entry appears first.
+`cat` (concatenate) reads the file from the first byte to the last and prints it top to bottom the oldest log entry at the top, the most recent at the bottom. `tac` is `cat` spelled backwards and does the opposite: it reads the file and outputs lines in reverse order, so the most recent log entry appears first.
 
 **Which to reach for in an 80,000-line incident log?**
 
@@ -360,7 +360,7 @@ EOF
 # Output: The database name is $DBNAME
 ```
 
-When the delimiter is **unquoted** (`EOF`), Bash performs variable expansion, command substitution, and arithmetic expansion on the heredoc body — exactly as it would in a double-quoted string. When the delimiter is **quoted** (`'EOF'` or `"EOF"` or `\EOF`), Bash treats the entire heredoc body as a raw literal string and makes no substitutions. The dollar sign, backticks, and `$()` are all passed through unchanged.
+When the delimiter is **unquoted** (`EOF`), Bash performs variable expansion, command substitution, and arithmetic expansion on the heredoc body exactly as it would in a double-quoted string. When the delimiter is **quoted** (`'EOF'` or `"EOF"` or `\EOF`), Bash treats the entire heredoc body as a raw literal string and makes no substitutions. The dollar sign, backticks, and `$()` are all passed through unchanged.
 
 This distinction matters enormously. If you are writing a script template that will itself be a shell script (i.e., the output should contain `$VARIABLE` literally for later execution), you must quote the delimiter, otherwise Bash expands your template variables immediately and writes garbage values or empty strings into the output file.
 
@@ -403,7 +403,7 @@ less logs/errors/error.log
 
 | Action | Shortcut |
 |--------|----------|
-| Search for a pattern | `/pattern` then Enter — press `n` for next match, `N` for previous |
+| Search for a pattern | `/pattern` then Enter press `n` for next match, `N` for previous |
 | Jump to end of file | `G` (capital G) |
 | Quit | `q` |
 
@@ -427,7 +427,7 @@ ls -l logs/access/ logs/archive/
 
 **Fundamental difference between `cp` and `mv`:**
 
-`cp` creates a new copy of the file at the destination path. After `cp`, both the source and destination exist independently they have separate inodes and separate data blocks (on the same filesystem, the data is physically duplicated). `mv` does two things depending on context: if source and destination are on the same filesystem, it only updates the directory entry (the filename pointer) — no data is copied, the inode number stays the same, and the operation completes in microseconds regardless of file size. If source and destination are on different filesystems, `mv` copies the data then deletes the source.
+`cp` creates a new copy of the file at the destination path. After `cp`, both the source and destination exist independently they have separate inodes and separate data blocks (on the same filesystem, the data is physically duplicated). `mv` does two things depending on context: if source and destination are on the same filesystem, it only updates the directory entry (the filename pointer) no data is copied, the inode number stays the same, and the operation completes in microseconds regardless of file size. If source and destination are on different filesystems, `mv` copies the data then deletes the source.
 
 **After renaming — does the original filename still exist?**
 
@@ -498,7 +498,7 @@ tree ~/projects/cyphercore
 
 **Does the structure match Abena's sticky note?**
 
-Yes — all six directories from the original specification exist. The file names have changed due to the archiving and renaming tasks, which is expected and correct.
+Yes all six directories from the original specification exist. The file names have changed due to the archiving and renaming tasks, which is expected and correct.
 
 **Why does a clean, predictable directory structure matter for automation?**
 
@@ -539,7 +539,7 @@ The number `2` in the third column is the hard link count the number of director
 
 **What is an inode in your own words?**
 
-An inode (index node) is a data structure stored in the filesystem that holds all metadata about a file except its name. It records: file type, permissions, owner UID and GID, file size, timestamps (created, accessed, modified), and the addresses of the data blocks on disk that contain the file's actual content. A filename in a directory is just a human-readable label that maps to an inode number — like a database record ID. One inode can have many names (hard links) pointing to it. The kernel uses the inode number, not the filename, to access file data.
+An inode (index node) is a data structure stored in the filesystem that holds all metadata about a file except its name. It records: file type, permissions, owner UID and GID, file size, timestamps (created, accessed, modified), and the addresses of the data blocks on disk that contain the file's actual content. A filename in a directory is just a human-readable label that maps to an inode number like a database record ID. One inode can have many names (hard links) pointing to it. The kernel uses the inode number, not the filename, to access file data.
 
 ---
 
@@ -822,9 +822,9 @@ The directory structure mirrors what a real deployment pipeline expects CI/CD to
 
 **Two commands that changed how I think about Linux:**
 
-1. **`ls -li`** — Before this lab, a file was just a name. Seeing that `db.conf` and `db_hardlink.conf` share the same inode number makes the abstraction concrete: a filename is just a pointer, and the actual data exists independently of what it's called. This reframes everything deletion, copying, permissions — because now I understand what the kernel is actually tracking. In incident response, inode-level thinking is the difference between believing a file is gone and knowing whether it can be recovered.
+1. **`ls -li`** — Before this lab, a file was just a name. Seeing that `db.conf` and `db_hardlink.conf` share the same inode number makes the abstraction concrete: a filename is just a pointer, and the actual data exists independently of what it's called. This reframes everything deletion, copying, permissions because now I understand what the kernel is actually tracking. In incident response, inode-level thinking is the difference between believing a file is gone and knowing whether it can be recovered.
 
-2. **`2>&1`** — I had seen this in scripts and copy-pasted it without understanding it. Learning that stdout and stderr are separate numbered file descriptors, and that `2>&1` is a runtime redirection of one descriptor to another's current target, makes every deployment log I've ever read make more sense. Half the "disappeared" errors in CI/CD pipelines I've seen are stderr not being captured. Now I will always ask: where is stderr going?
+2. **`2>&1`** — I had seen this in scripts and copy-pasted it without understanding it. Learning that stdout and stderr are separate numbered file descriptors, and that `2>&1` is a runtime redirection of one descriptor to another's current target, makes every deployment log I have ever read make more sense. Half the "disappeared" errors in CI/CD pipelines I have seen are stderr not being captured. Now I will always ask: where is stderr going?
 
 ---
 
